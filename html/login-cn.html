@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<title>会员登录-Q聊</title>
+	<link href="../images/bitbug_favicon.ico" rel="shortcut icon"/>
+	<link rel="stylesheet" type="text/css" href="../css/test.css
+	">
+	<script src="../js/vue.js"></script>
+</head>
+<body>
+<div class="head">
+	<div class="logo"></div>
+	<h1>会员登录</h1>
+</div>
+
+<div class="loginbox">
+	<div class="pic"></div>
+	<div class="loginlist">
+		<div class="switch" :class="{'bg-a':isA,'bg-b':isB}" @click="switchWay()"></div>
+		<div class="switch-div">
+			<div class="choseWay">
+				<span class="radioOne">
+					<label>
+					<input type="radio" name="loginWay" checked="true"  @click="changUserWay()"/>
+					普通登录
+					</label>
+				</span>
+				<span class="radioTwo">
+				<label>
+					<input type="radio" name="loginWay"  @click="changMobileWay"/>
+					手机动态密码登录</label>
+				</span>
+			</div>
+			<div class="loginInput" v-if="userLogin">
+				<ul>
+					<li style="z-index:9999;position: relative;">
+					<input class="inputUser" type="text" placeholder="用户名/邮箱/会员号/手机号" v-model="inputuser" @blur="inputUser()">
+						<div class="tag" v-if="showerr1"> 
+							<div class="arrow"><em></em> <span></span></div>
+						 	{{cueuser}}
+						</div>
+					</li>
+					
+					<li  style="z-index:9900;position: relative;">
+					<input class="inputPwd" type="text" placeholder="密码" v-model="passwd" @blur="inputPwd()" >
+					<div class="tag" v-if="showerr2"> 
+							<div class="arrow"><em></em> <span></span></div>
+						 	{{cuepwd}}
+						</div>
+					</li>
+					
+					<li>
+					<input class="checkCode" type="text" placeholder="验证码" v-model="inputcode" @blur="checkCode()" >
+					<span class="showcode" :style="{color:codeColor}">{{code}}</span>
+					<div class="ok" :style="{background:codebg}"></div>
+					<span class="changecode" @click="createCode()"> 换一张</span>
+					 </li>
+					
+					 <li style="height:20px"><label><input  class="checkbox" type="checkbox" checked="true">
+					 一周内免登陆
+					 </label> <a href="" style="float:right;">忘记密码</a>
+					 </li>
+					 </ul>
+			</div><!--用户验证--> 
+			<div class="mobileInput" v-show="mobileLogin">				
+				<div class="mobileone" >			
+					<div class="selectid" @click="selectfrom">{{mobilefrom}}<button class="draw"></button>
+						<ul class="drawarea" v-show="selectmore">
+							<li v-for="option in options" class="someoptions" @click="selected($index)">{{option.text}}</li>
+						</ul>
+					</div>
+					<input type="text" class="inputs" placeholder="请输入手机号码" v-model="inputMobile" @blur="mobilecheck()">	
+					<div class="tag2" v-if="showerr3"> 
+							<div class="arrow"><em></em> <span></span></div>
+						 	{{cuemobile}}
+						</div>
+				</div>
+				<div class="mobiletwo" >
+						 <input type="text" class="inputs" placeholder="请输入验证码" style="width:150px;">
+						<div class="getactPwd" @click="GetActPwd()">{{actpwd}}</div>
+				</div>
+			</div><!--手机验证-->
+
+				<div class="login" @click="ToLogin()">登 录</div>			
+				 <div class="otherway">
+					 	使用其他方式登录：<ul >
+					 	<li><a href=""><img src="../images/qq.png"></a></li>
+					 	<li><a href=""><img src="../images/weibo.png"></a></li>
+					 	<li><a href=""><img src="../images/weixin.png"></a></li>
+					 	<li ><a href=""><img src="../images/people.png"></a></li>
+					 	</ul>
+				 </div>
+			
+		</div>
+	</div><!--loginlist end-->
+
+</div>
+
+<div class="turn"><a href="">立即注册</a></div>
+
+<div class="apply">
+	<ul>
+		<li><a href="" class="iphone">iPhone / iPad</a></li>
+		<li><a href="" class="android">Android</a></li>
+		<li><a href="" class="windows">Windows</a></li>
+		<li><a href="" class="mobile">其他手机端</a></li>
+	</ul>
+</div>
+
+<script type="text/javascript">
+	new Vue({
+		el:'.loginbox',
+		data:{
+			userLogin:true,
+			mobileLogin:false,
+			inputuser:'',
+			isA:true,
+			isB:false,
+			code:'',
+			codeColor:'#9495e8',
+			selectmore:false,
+			mobilefrom:'中国大陆 +86',
+			options:[
+			{text:'中国大陆(+86)'},
+			{text:'中国香港(+852)'},
+			{text:'中国澳门(+853)'},
+			{text:'中国台湾(+886)'},
+			],
+			inputcode:'',
+			codebg:'',
+			showerr1:false,
+			showerr2:false,
+			cueuser:'',
+			cuepwd:'',
+			passwd:'',
+			showerr3:false,
+			inputMobile:'',
+			cuemobile:'',
+			actpwd:'获取动态密码',
+			
+		},
+		ready:function(){
+			var seed = new Array(  
+                    'abcdefghijklmnopqrstuvwxyz',  
+                    'ABCDEFGHIJKLMNOPQRSTUVWXYZ',  
+                    '0123456789'  
+            );               //创建需要的数据数组  
+            var idx,i;  
+            var result = '';   //返回的结果变量  
+            for (i=0; i<4; i++) //根据指定的长度  
+            {  
+                idx = Math.floor(Math.random()*3); //获得随机数据的整数部分-获取一个随机整数  
+                result += seed[idx].substr(Math.floor(Math.random()*(seed[idx].length)), 1);//根据随机数获取数据中一个值  
+            }  
+             this.code = result; //返回随机结果 
+
+		/*var timer = setInterval(function() {
+		      if(this.time<120&&this.time>0){
+		        this.time--;
+		      } 
+		  },1000) */
+       },
+		methods:{
+			changUserWay:function(){
+				this.userLogin = true
+				this.mobileLogin = false
+			},
+			changMobileWay:function(){
+				this.userLogin = false
+				this.mobileLogin = true
+			},
+			switchWay:function(){
+				this.isA = !this.isA
+				this.isB = !this.isB			
+			},
+			inputUser:function(){				
+				if(this.inputuser.length=="")
+				{
+					this.showerr1 = true
+					this.cueuser="请输入用户信息"
+					return false;
+					
+				}
+				if(this.inputuser.length !="")
+				{
+					/*var str=this.inputuser;
+					var reg= A-Za-z0-9_\-\u4e00-\u9fa5;
+					if(!reg.test(str))*/
+					this.showerr1 = false
+					this.cueuser=""	
+						return true;
+						
+				}
+
+			},
+			inputPwd:function(){
+				var reg =  /^[a-zA-Z0-9]{6,12}$/;
+				var str=this.passwd;				
+				 if(!str.match(reg)){
+					this.showerr2 = true;
+					this.cuepwd ="密码由6~12位数字、字母的组合，字母区分大小写"
+					return false;
+				}
+				  else if(str.match(reg)){
+					this.showerr2 = false;
+					this.cuepwd =""
+						return true;
+				}
+
+			},
+			createCode:function() {  
+	            var seed = new Array(  
+	                    'abcdefghijklmnopqrstuvwxyz',  
+	                    'ABCDEFGHIJKLMNOPQRSTUVWXYZ',  
+	                    '0123456789'  
+	            );               
+	            var idx,i;  
+	            var result = '';     
+	            for (i=0; i<4; i++) 
+	            {  
+	                idx = Math.floor(Math.random()*3);  
+	                result += seed[idx].substr(Math.floor(Math.random()*(seed[idx].length)), 1);  
+	            }  
+	           this.code = result; 
+	            var rand=Math.round(Math.random()*1000000);	          
+	            this.codeColor="#"+rand;
+	            this.codebg=""          
+       		 },       		
+       		 checkCode:function(){
+       		 		var code=this.code.toLowerCase();
+       		 	 if (this.inputcode == code){
+       		 	 	//alert("ok")
+       		 	 	this.codebg="url(../images/codeok.png)no-repeat center";
+       		 	 	return true;
+       		 	 }
+       		 	 else{
+       		 	 	//alert("input false")
+       		 	 	this.codebg="url(../images/codefalse.png)no-repeat center";
+       		 	 	return false;
+       		 	 } 
+       		 },
+       		 ToLogin:function(){
+       		 	if(this.checkCode()&&this.inputPwd()&&this.inputUser()){
+       		 		alert("检测成功！")
+       		 	}
+       		 	else{
+       		 		alert("请检查输入！");
+       		 	}
+       		 },
+       		  selectfrom:function(){
+       		 	this.selectmore =!this.selectmore
+       		 },
+       		 selected:function(index){
+       		 	this.mobilefrom=this.options[index].text;
+       		 },
+       		 mobilecheck:function(){
+       		 	var regStr= /0?(13|14|15|18)[0-9]{9}/;
+       		 	var st=this.inputMobile;
+       		 	if (!regStr.test(st)) {
+       		 		this.showerr3 = true
+       		 		this.cuemobile="请正确输入手机号码"
+       		 	}
+       		 	else{
+       		 		this.showerr3 = false       		 		
+       		 	}	
+       		 },
+       		GetActPwd:function(){
+       		 	
+       		 	//this.actpwd="重新获取20(s)"
+       		 	
+       		 		this.actpwd="重新获取"+this.time+"(s)"
+       		 	
+       		 },
+       		
+		}
+	})
+</script>
+</body>
+</html>

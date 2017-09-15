@@ -1,0 +1,722 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<title>网站首页</title>
+	<link href="../images/bitbug_favicon.ico" rel="shortcut icon"/>
+	<link rel="stylesheet" type="text/css" href="../css/index.css">
+	<script src="../js/vue.js"></script>
+</head>
+<body>
+<div class="head">
+	<div class="logo"></div>
+	<div class="head-nav">
+		<ul>
+			<li v-for="nav in navs">{{nav}}
+			<div class="lidiv"></div></li>
+		</ul>
+	</div>
+	<div class="head-round">
+		<div class="phone">		
+		</div>
+		<div class="phone-at">手机版<br/>专享五折起</div>
+	</div>
+	<div class="head-round">
+		<div class="tel"></div>
+		<div class="tel-at">7x24小时客服<br/>
+		<h3 @mouseover="Todrawtel()" @mouseout="Todrawtel()">4001-888-888</h3><div>
+			<div class="teltag" v-show="teldraw"> 
+				<div class="arrow"><em></em> <span></span></div>
+					<ul><li v-for="tel in tels">{{tel}}</li></ul>
+			</div>
+		</div>
+		</div>
+	</div>
+</div><!--head end -->
+<div class="maintab">
+	<div class="tabhead">
+		<div class="tab01">
+		<ul>
+		<li v-for="tab in maintabs" :class="{chose:isclick==$index}" @mouseover="overli($index)">{{tab}}</li>
+		</ul>
+		</div>
+		<div class="LoginOrReg">
+			<a href="login-cn.html">登录</a>
+			<div style="height: 10px;width: 0;border:1px solid white;display: inline-block;"></div>
+			<a href="">注册</a>
+		</div>
+		<!-- <div class="loginList">
+			<input type="button" class="lo" value="登录">
+		</div> -->
+	</div> 
+	<!--tabhead end-->
+	<div class="tabbody">      	
+        <ul class="showimg">
+        <template v-for='sd in tabData'>
+          <li v-if='tabId==$index' >
+           <img :src="sd.url"/>           
+           </li>
+          </template>
+        </ul> 
+        <div class="wrap">
+       	 <div class="wrap-tab">
+        	<ul class=wrap-list>
+        		<li :class="{fun:isfun==$index}" v-for="fun in funs" @click="changeFun($index)">{{{fun.icon}}}
+        		{{fun.text}}</li>
+        	</ul>
+         </div>
+         <template id="tabhotel">
+         	<div class="hotels">
+         	<ul>
+	         	<li v-for="hotel in abroad" class="homehotel" :class="{boder:isselected==$index}" @click="isSelected($index)">
+	         	{{hotel}}</li>	         	
+	         </ul>
+	         	 <div style="width: 380px;height:0;border:1px solid #aaaaaa;float: left;position: relative;z-index: 2;margin-top: -3px;"></div>  
+	         	 <div class="destination">
+         			目的地<input type="text" placeholder="目的地" class="where"></div>  
+	         	 <div class="Toplace">
+	         			入住<input type="date">退店 <input type="date" ></div> 
+	         	 <div class="destination">
+	         		关键词<input type="text" placeholder="请输入地标/商圈/景点" class="where"></div>
+	         	<div class="startSearch">
+	         		<img src="../images/startsearch.png" />搜索
+	         	</div> 
+	         	<div class="Search" v-show="earthmap">
+	         		<img src="../images/earthsearch.png" />地图搜索
+	         	</div>    		
+         	</div>      		
+         </template>
+
+         <template id="tabairport">
+         	<div class="hotels">
+         	<ul>
+	         	<li v-for="plane in planes" class="homehotel" :class="{boder:isselected==$index}" @click="isSelected($index)">
+	         	{{plane}}</li>	         	
+	         </ul>
+	         	 <div style="width: 380px;height:0;border:1px solid #aaaaaa;float: left;position: relative;z-index: 2;margin-top: -3px;"></div>  
+	         	 <div class="destination" style="color: gray">
+         			航程类型<input type="radio" name="where" class="voyage" checked="true"> 
+         			<label>单程</label>
+         			<input type="radio" name="where" class="voyage">
+         			<label>往返</label>
+         		</div>  
+	         	<div class="city">往返城市
+	         	<input type="text" name="" v-model="fromWhere"><img src="../images/goback.png"><input type="text" name="" v-model="toWhere">
+	         	</div>
+	         	 <div class="selectTime">去程
+	         	<input type="date" name="" v-model="fromWhere">返程
+	         	<input type="date" name="" v-model="toWhere">
+	         	</div>
+	         	<div class="startSearch">
+	         		<img src="../images/startsearch.png" />搜索
+	         	</div> 
+	         	 		
+         	</div>      		
+         </template>
+
+          <template id="tabtrain">
+         	<div class="hotels">      	
+	         	 
+	         	<div class="city">往返城市
+	         	<input type="text" name="" v-model="fromWhere"><img src="../images/goback.png"><input type="text" name="" v-model="toWhere">
+	         	</div>
+	         	 <div class="leaveTime">出发日期
+	         	<input type="date" name="" v-model="fromWhere">
+	         	</div>
+	         	<div style="float: left;width:380px;height:25px;padding-left: 70px;"><input type="checkbox" name="" style="width:15px;height: 15px;font:4px/10px Microsoft YaHei;">只看高铁/动车
+	         	<input type="checkbox" name="" style="width:15px;height: 15px; margin-left: 20px;">只看有票</div>
+	         	<div class="startSearch">
+	         		<img src="../images/startsearch.png" />搜索
+	         	</div> 
+	         	 <div class="hotline">热门路线:
+	         	 <label>北京<img src="../images/go.png"/>西安
+	         	 </label>
+	         	 <label>上海<img src="../images/go.png"/>南京
+	         	 </label>
+	         	 
+	         	 <label>广州<img src="../images/go.png"/>上海
+	         	 </label>
+	         	 </div>		
+         	</div>      		
+         </template>
+
+         <template id="tabview">
+         	<div class="viewsearch">
+         		<div class="inputview">输入景点
+	         		<input type="text" name="" class="view" v-model="viewplace">门票类型
+	         		<select>
+	         			<option>成人票</option>
+	         			<option>学生票</option>
+	         			<option>儿童票</option>         			
+	         		</select>
+	         		<button>搜索</button>
+         		</div>
+         	<div class="introduce">
+         		<div class="viewtitle">
+         			<p>【{{viewplace}}】</p>
+         			<h5>{{viewplacemessage}}</h5>
+         		</div>
+         		<div class="imgshow">
+         			<div class="imgs">
+         			<img :src="viewurl"> 
+         			</div>
+         			<div class="imglist">
+         				<ul>
+         				<li v-for="view in viewplaces" @mouseover="seeView($index)">
+         				<img :src="view.url"></li>
+         				
+         				</ul>
+         			</div>
+         			
+         		</div>
+         		<div class="viewdetail">
+         				<div class="sale">
+         					<label>手机专享价:</label>
+         					<span class="cheap">￥110</span>
+         				</div>
+         				<div class="price">
+         					<label>门店价:￥120</label>
+         					<div class="yuan"></div>
+         				</div>
+         				<div class="sellout">
+         					<label>已售</label>
+         					<span>2298</span>
+         				</div>
+         				<div class="more">查看详情</div>
+         				<div class="gobuy">去购买</div>
+         		</div>
+         	</div>
+         	</div>
+
+         </template>
+         <template id="tabphone">
+         	<div class="phonecode">
+         		<img src="../images/phonecode (2).png">
+         		
+         	</div>
+
+         </template>
+        <div class="tabCon">
+		<component :is="currentView" transition="fade" transition-mode="out-in"></component>  
+		</div>
+        </div>
+  </div><!--tabbody--> 
+</div><!--maintab end-->
+<div class="hoteltypes">	
+	<div class="hotelLogin">
+			<a href="login-cn.html">登录</a>
+			展示你的个性化内容		
+	</div>
+	<div class="types">
+		<ul>
+		  <li v-for="hotel in hotel_autos" v-bind:style="{width:hotel.wid+'px',background:hotel.url}" @mouseover="toggleShow($index)"
+              @mouseout="toggleHid($index)">
+			<div class="div_auto" v-show="hotel.show" >
+				<h4>{{hotel.theme}}</h4>
+			</div>
+		</li> 
+		
+		</ul>
+	</div>
+</div><!--hoteltypes end-->
+<div class="thePlaceCount">  
+	<div class="count">
+		<h4>目的地指数</h4>
+		<span>覆盖全球50万家酒店,你想住的,我们都有</span>
+	</div>
+	<div class="count_f1">
+		<div class="f1_do">
+			<div class="do_h">国内</div>
+			<div class="do_list">
+				<ul>
+					<li v-for="list in do_lists" class="doLists" :class="{ hoverAct:ishover==$index,ListAct:isAct==$index}"   @click="IsDoList($index)" @mouseover="hoverList($index)" @mouseout="hoverafter($index)">
+					{{list}}</li>
+				</ul>
+				<a href="">更多>></a>
+			</div>
+		</div>
+
+			<div class="f1_pic">
+				<ul>
+				<li v-for="tab in places" >
+					<div class="dis_pic" >
+					<img :src="tab.url" />
+						<div class="pic_name">{{tab.place}}</div>						
+					</div>
+					<div class="fonts">{{tab.theme}}</div>
+				</li>
+				</ul>		
+			</div>			
+		
+	<!--国内 end-->
+
+		<div class="f1_do">
+			<div class="do_w">海外</div>
+			<div class="do_list">
+				<ul>
+					<li v-for="li in lis" class="doLists" :class="{ hoverAct:islis==$index,ListAct:isActs==$index}"   @click="IsDoLis($index)" @mouseover="hoverLis($index)" @mouseout="hoverafters($index)">
+					{{li}}</li>
+				</ul>
+				<a href="">更多>></a>
+			</div>
+
+		</div>
+
+			<div class="f1_pic">
+				<ul>
+				<li v-for="tab in abroad" >
+					<div class="dis_pic" >
+					<img :src="tab.url">
+						<div class="pic_name">{{tab.place}}</div>						
+					</div>
+					<div class="fonts">{{tab.theme}}</div>
+				</li>
+				</ul>		
+			</div>			
+	</div>
+</div><!--thePlaceCount-->
+
+<div class="specialTicket">  
+	<div class="special">
+		<h4>超值特价票</h4>		
+	</div>
+	<div class="special_f2">
+		<div class="f2_do">
+			<div class="do_h2">机票</div>
+			<div class="do_lists">
+				<ul>
+					<li v-for="plane in planes" class="doBlue" :class="{ blueAct:isblue==$index,Listblue:ib==$index}"   @click="IsBLue($index)" @mouseover="hoverList($index)" @mouseout="hoverafter($index)">
+					{{plane}}</li>
+				</ul>
+				<a href="">更多>></a>
+			</div>
+		</div>
+		<div class="f2_pic">
+				<ul>
+				<li v-for="li in 6">
+					<div class="from">北京</div>
+					<div class="ft"></div>
+					<div class="to">贵阳</div>
+					<div class="fromtime">10月31日</div>
+					<div class="sales">0.9折</div>
+					<div class="money">￥100</div>
+				</li>
+				</ul>		
+		</div>	
+		<!--另一个-->	
+		<div class="f2_do" style="margin-top:20px;">
+			<div class="do2_w" >火车票</div>
+			<div class="do_lists">
+				<ul>
+					<li v-for="train in trains" class="doLists" :class="{ blueAct:isblues==$index,Listblue:ibs==$index}"  @click="IsBLues($index)" @mouseover="hoverLists($index)" @mouseout="hoverafters($index)">
+					{{train}}</li>
+				</ul>
+				<a href="">更多>></a>
+			</div>
+		</div>
+
+			<div class="f2_pic">
+				<ul>
+				<li v-for="tab in 6" >
+					<div class="from">北京</div>
+					<div class="tt"></div>
+					<div class="to">贵阳</div>
+
+					<div class="fromtime">10-31</div>
+					<div class="sales" >有票</div>
+					<div class="money">￥165.5</div>
+				</li>
+				</ul>		
+			</div>			
+	</div>
+</div><!--specialTicket-->
+<div class="guide">  
+	<div class="guide_titlt">
+		<h4>旅游指南</h4>		
+	</div>
+	<div class="guide_f2">
+		
+	<div class="tab_guide">
+		<div class="tab_1">
+			<ul>
+				<li v-for="lis in guideintro"   @mouseover="changeGuide($index)">
+				 {{lis}}
+				</li>
+			</ul>
+		</div>
+		<div class="guide_pic">
+		<ul>
+			<li  v-for="pic in guide_pics" :class="{guideshow:isguide==$index}">
+			<img :src="pic"></li>
+		</ul>
+		</div>
+	</div>
+	<div class="two_guide">
+		<ul>
+			<li v-for="ins in places">
+				<img :src="ins.src">
+				<h4>{{ins.theme}}</h4>
+			</li>
+		</ul>
+	</div>
+	</div>
+</div><!--guide-->
+
+
+<script type="text/javascript">
+
+	new Vue({
+		el:'.head',
+		data:{
+			navs:['积分商城','礼品卡','在线客服','帮助中心'],
+			tels:['国内: 4009-888-888','香港: 852-8131-883','台湾: 886-2-7717-8123',
+			'海外: 8610-6432-9999'],			
+			teldraw:false
+		},
+		methods:{
+			Todrawtel:function(){
+				this.teldraw = !this.teldraw
+			} 
+		}
+	});
+	Vue.component('tab01',{
+		template:'#tabhotel',
+		data:function(){
+			return {
+				abroad:['国内酒店','国际酒店'],
+				isselected:0,
+				earthmap:true,
+			}
+		},
+		methods:{
+			isSelected:function(index){
+					this.isselected=index;
+					if(index==1){
+						this.earthmap = !this.earthmap
+					}
+
+				},
+		}
+	});	
+	Vue.component('tab02',{
+		template:'#tabairport',
+		data:function(){
+			return {
+				planes:['国内机票','国际机票'],
+				isselected:0,
+				fromWhere:'北京',
+				toWhere:'上海'
+			}
+		},
+		methods:{
+			isSelected:function(index){
+					this.isselected=index;
+					if(index==1){
+						this.earthmap = !this.earthmap
+					}
+
+				},
+		}
+	});
+	Vue.component('tab03',{
+		template:'#tabtrain',
+		data:function(){
+			return {
+				
+				fromWhere:'北京',
+				toWhere:'上海'
+			}
+		},
+		methods:{
+			isSelected:function(index){
+					this.isselected=index;
+					if(index==1){
+						this.earthmap = !this.earthmap
+					}
+
+				},
+		}
+	});
+	Vue.component('tab04',{
+		template:'#tabview',		
+		data:function(){
+			return {
+				viewplace:'西江千户苗寨',
+				viewplacemessage:'仅售110.0元！最高价值120.0元的西江千户苗寨门票+观光车(成人票)，请至少提前1天的23点59分前购买',
+				viewurl:'../images/view.png',
+				viewplaces:[
+				{url:'../images/view1.png'},
+		      	{url:'../images/view2.png'},
+		      	{url:'../images/view3.png'}
+		      	]
+			}
+		},
+		ready:function(){
+
+			var str=this.viewplacemessage
+			var len=str.length
+			if (len>37){
+				this.viewplacemessage=str.substring(0,37)+"..."
+			}
+		},
+		methods:{
+			seeView:function(index){
+				this.viewurl=this.viewplaces[index].url
+			}
+		}
+	});
+	Vue.component('tab05',{
+		template:'#tabphone'
+	});
+	Vue.component("tabid1",{
+		template:'#id_1'
+	})
+	new Vue({
+		el:'.maintab',
+		data:{
+			maintabs:['首页','国内酒店','国际酒店','短租公寓','机票','火车票','汽车票','用车','旅游指南'],
+			isclick:0,
+			tabData:[
+			{url:'../images/tabphoto1.jpg'},
+	      	{url:'../images/tabphoto2.jpg'},
+	      	{url:'../images/tabphoto3.jpg'}],
+	      	tabId:0,
+	      	funs:[
+	      	{icon:'<img src="../images/iconhotel.png">',text:'酒店'},
+	      	{icon:'<img src="../images/iconairport.png">',text:'飞机票'},
+	      	{icon:'<img src="../images/iconhuoche.png">',text:'火车票'},
+	      	{icon:'<img src="../images/iconticket.png">',text:'景点票'},
+	      	{icon:'<img src="../images/iconphone.png">',text:'手机版'}
+	      	],
+	      	isfun:0,
+	      	View:'tabid1',
+	      	currentView:'tab01',
+	      	
+	      	
+		},
+		ready: function() {
+	    var _this=this;
+	    var timer = setInterval(function() {
+	      if(_this.tabId>=0&&_this.tabId<_this.tabData.length-1){
+	        _this.tabId=parseInt(_this.tabId)+1;
+	      }
+	       else if (_this.tabId==_this.tabData.length-1) {
+	        _this.tabId=0;
+	      }
+	    },2000)
+	  },
+		methods:{
+				overli:function(index){
+					this.isclick=index       
+				},
+				changeFun:function(index){
+					this.isfun=index;
+					if(index==0){
+					this.currentView='tab01'
+					}
+					if(index==1){
+					this.currentView='tab02'
+					}
+					if(index==2){
+					this.currentView='tab03'
+					}
+					if(index==3){
+					this.currentView='tab04'
+					}
+					if(index==4){
+					this.currentView='tab05'
+					}
+				},
+				
+				
+			}
+	});
+	new Vue({
+		el:'.hoteltypes',
+		data:{
+			hotel_autos:[
+			{theme:'园林酒店',url:'url(../images/20150422_ifold1.jpg) no-repeat center',show:true,wid:'168'},
+			{theme:'情侣酒店',url:'url(../images/20150120_ifold2.jpg) no-repeat center',show:true,wid:'172'},
+			{theme:'设计师酒店',url:'url(../images/20150120_ifold3.jpg) no-repeat center',show:true,wid:'172'},
+			{theme:'青年酒店',url:'url(../images/20150120_ifold4.jpg) no-repeat center',show:true,wid:'172'},
+			{theme:'特色酒店',url:'url(../images/20150120_ifold5.jpg) no-repeat center',show:true,wid:'172'},
+			{theme:'海岛酒店',url:'url(../images/20150120_ifold6.jpg) no-repeat center',show:true,wid:'172'},
+			{theme:'海外酒店',url:'url(../images/20150120_ifold7.jpg) no-repeat center',show:true,wid:'172'}
+			],
+			
+			
+		},
+		methods:{
+			toggleShow:function(index){
+				var len=this.hotel_autos.length;
+											
+				this.hotel_autos[index].show = !this.hotel_autos[index].show
+				console.log(index)
+					if(index==0){
+						this.hotel_autos[index].wid=402
+						for( var i=1;i<len;i++){
+							this.hotel_autos[i].wid=133
+							}	
+							return							
+						}	
+				if(index > 0 || index < len-1){	//	index=1-5 		
+				//this.hotel_autos[index].wid=400		
+					for( var i=0;i<len;i++){			
+						this.hotel_autos[i].wid=133
+						if(index==i){
+							this.hotel_autos[i].wid=400
+							
+						}						
+					}
+					return 
+				}
+				if(index==len-1){//index=6
+					for( var i=0;i<len;i++){
+						this.hotel_autos[i].wid=133
+						if(index==i){
+						this.hotel_autos[index].wid=400
+						
+						}
+					}
+					return 
+				}
+			},
+			toggleHid:function(index){
+				var len=this.hotel_autos.length;								
+				this.hotel_autos[index].show = !this.hotel_autos[index].show
+				for( var i=0;i<len;i++){
+							this.hotel_autos[i].wid=172
+							if(i==0){
+								this.hotel_autos[i].wid=168
+							}
+						}
+				/*if(index==0){
+					for( var i=0;i<len;i++){
+							this.hotel_autos[i].wid=172
+							if(index==i){
+								this.hotel_autos[i].wid=168
+							}
+						}
+						return								
+					}
+				if(index > 0 || index < len-1){					
+					for( var i=0;i<len-1;i++){			
+						this.hotel_autos[i].wid=172
+						if(index==i){
+							this.hotel_autos[i].wid=168							
+						}						
+					}
+					return
+				}
+				if(index==len-1){
+					for( var i=0;i<len;i++){			
+						this.hotel_autos[i].wid=168						
+						if(i!=0){
+							this.hotel_autos[i].wid=172
+						}				
+					}
+					return
+				}*/
+			},
+		}
+
+	})
+	new Vue({
+		el:'.thePlaceCount',
+		data:{
+			do_lists:['登高踏青','小憩温泉','天然氧吧','草原撒欢','小镇时光','美食之城'],
+			lis:['文艺清新','面朝大海','别样建筑','浪漫主义','魅力都市'],			
+			isAct:0,
+			ishover:0,
+			islis:0,
+			isActs:0,
+			places:[
+			{place:'黄山',url:'../images/dgtq-hs.jpg',theme:'春意撩人 登高踏青采春色',},
+			{place:'峨眉山',url:'../images/dgtq-ems.jpg',theme:'阳春三月 闻着茶香去峨眉'},
+			{place:'五台山',url:'../images/dgtq-wts.jpg',theme:'迎春 祈福 登五台'},
+			{place:'庐山',url:'../images/dgtq-ls.jpg',theme:'亲近自然 春游庐山'}
+			],
+			ison:'',
+			
+			abroad:[			
+			{place:'伦敦',url:'../images/termini_it1_ld.jpg',theme:'风情英伦,帝国余韵',},
+			{place:'清迈',url:'../images/termini_it1_qm.jpg',theme:'泰北玫瑰,慢行古城'},
+			{place:'济州岛',url:'../images/termini_it1_jzd.jpg',theme:'最传统的浪漫,最神秘的自然'},
+			{place:'罗马',url:'../images/termini_it1_lm.jpg',theme:'永恒之城,魅力无限'}
+			]
+		},
+		methods:{
+			IsDoList:function(index){
+				this.isAct=index;
+			},
+			hoverList:function(index){
+				this.ishover=index;
+			},
+			hoverafter:function(index){
+				this.ishover=-1;
+			},
+			IsDoLis:function(index){
+				this.isActs=index;
+			},
+			hoverLis:function(index){
+				this.islis=index;
+			},
+			hoverafters:function(index){
+				this.islis=-1;
+			}
+		}
+	})
+	new Vue({
+		el:".specialTicket",
+		data:{
+			planes:['北京出发','上海出发','广州出发','杭州出发','深圳出发','成都出发'],
+			trains:['北京出发','上海出发','广州出发','深圳出发','天津出发','厦门出发'],
+			isblue:0,
+			ib:0,
+			isblues:0,
+			ibs:0
+		},
+		methods:{
+			IsBLue:function(index){
+				this.ib=index;
+			},
+			hoverList:function(index){
+				this.isblue=index;
+			},
+			hoverafter:function(index){
+				this.isblue="-1";
+			},
+			IsBLues:function(index){
+				this.ibs=index;
+			},
+			hoverLists:function(index){
+				this.isblues=index;
+			},
+			hoverafters:function(index){
+				this.isblues="-1";
+			},
+		}
+	})
+	new Vue({
+		el:'.guide',
+		data:{
+			guide_pics:['../images/guide_pics.jpg','../images/guide_pics_1.jpg','../images/guide_pics_2.jpg','../images/guide_pics_3.jpg'
+			],
+			guideintro:['乐山乐水 四川旅博会开幕','青春520 从三亚文艺客栈开始','厦门中山路上的闽南风情','敦煌 去莫高窟看飞天舞'],
+			places:[
+			{src:'../images/wIYBAFdU5g6AAhQGAABkH26zr3g092.jpg',theme:'邂逅丽江的悠闲慢时光'},
+			{src:'../images/v4YBAFeN8muAHV5KAABlOVqx5hg969.jpg',theme:'跟着文艺小HI玩疯福建'}],
+			selects:0,
+			isguide:0	
+		},
+		methods:{
+			changeGuide:function(index){
+				this.selects=index
+				this.isguide=index
+				
+			}
+		}
+	})
+</script>
+</body>
+</html>
